@@ -1,10 +1,9 @@
-# adv2023
+# Advent of Code 2024
 
-A Clojure library designed to ... well, that part is up to you.
+My solutions for [AdventOfCode 2024](https://adventofcode.com/2024/) 
 
-## Usage
-
-FIXME
+Most of my work is done in an interactive manner in an Emacs editor
+using CIDER to provide evaluation of the code as I work.
 
 ## License
 

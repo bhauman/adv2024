@@ -4,24 +4,22 @@
    [clojure.string :as string]
    [clojure.edn :as edn]))
 
-(def input (edn/read-string (str "["(slurp "src/adv2024/day01/input.txt") "]")))
+(def input (->> (str "[" (slurp "src/adv2024/day01/input.txt") "]")
+                edn/read-string
+                (partition 2)
+                (apply map vector)))
 
 ;; part 1
 (->> input
-     (partition 2)
-     (apply map vector)
      (map sort)
      (apply map vector)
      (map #(abs (apply - %)))
      (reduce +)) ; => 1873376
 
-
 ;; part 2
-(->> input
-     (partition 2)
-     (apply map vector)
-     ((juxt first (comp frequencies second)))
-     ((fn [[l freq]]
-        (->> l
-             (map #(* % (get freq % 0)))
-             (reduce +))))) ; 18997088
+(let [[a b] input
+      freq (frequencies b)]
+  (->> a
+       (map #(* % (get freq % 0)))
+       (reduce +))) ; => 18997088
+                                        
