@@ -23,7 +23,7 @@
         (if (nil? val1)
           (assoc a :doing (= com "do()"))
           (cond-> a
-            doing (update :accum + (* (Integer/parseInt val1) (Integer/parseInt val2))))))
+            doing (update :accum + (* (parse-long val1) (parse-long val2))))))
       {:doing true
        :accum 0})
      ) ;; => 82868252
