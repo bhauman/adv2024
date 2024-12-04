@@ -15,21 +15,17 @@
 (defn in-bounds? [p]
   (every? #(<= 0 % (dec width)) p))
 
-(defn fwd-diagonal-poses [p]
+(defn diagonal-poses [p]
   (take-while in-bounds? (iterate #(mapv inc %) p)))
 
-(defn bkwd-diagonal-poses [p]
-  (take-while in-bounds? (iterate #(vector (inc (first %)) (dec (second %))) p)))
-
-(defn fwd-starts []
+(defn diag-starts []
   (let [res (mapv vector (repeat 0) (range width))]
     (distinct
      (into res (mapv (comp vec reverse) res)))))
 
-(defn bkwd-starts []
-  (distinct
-   (into (mapv vector (repeat 0) (range width))
-         (mapv vector (range width) (repeat (dec width))))))
+(defn diags [in]
+  (->> (map diagonal-poses (diag-starts))
+       (map #(map (partial get-in in) %))))
 
 (defn count-xmas [l]
   (let [s (apply str l)]
@@ -40,10 +36,8 @@
           (map count-xmas
                (concat input
                        (grid/transpose input)
-                       (->> (map fwd-diagonal-poses (fwd-starts))
-                            (map #(map (fn [p] (get-in input p)) %)))
-                       (->> (map bkwd-diagonal-poses (bkwd-starts))
-                            (map #(map (fn [p] (get-in input p)) %)))))))
+                       (diags input)
+                       (diags (mapv (comp vec reverse) input))))))
 
 ;; part 1
 (count-all-xmas) ;; => 2483
@@ -67,7 +61,6 @@
 ;; part 2
 (count (filter
         #(and (= \A (get-in input %))
-              (when-let [mmss (get-corners %)]
-                (x-mas? mmss)))
+              (x-mas? (get-corners %)))
         (locations width))) ;; => 1925
 
