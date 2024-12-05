@@ -16,16 +16,16 @@
 
 (defn valid-update? [[x & xs :as u]]
   (or (empty? u)
-      (and (every? #(get-in after [x %]) xs)
+      (and (every? #(after? x %) xs)
            (valid-update? (rest u)))))
 
 (defn middle [x] (nth x (int (/ (count x) 2))))
 
 ;; part 1
 (->> updates
-       (filter valid-update?)
-       (map middle)
-       (reduce +))
+     (filter valid-update?)
+     (map middle)
+     (reduce +))
 
 ;; part 2
 (->> updates
