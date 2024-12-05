@@ -1,4 +1,4 @@
-(ns adv2024.day03.sol
+(ns adv2024.day04.sol
   (:require
    [clojure.java.io :as io]
    [clojure.string :as string]
@@ -63,4 +63,3 @@
         #(and (= \A (get-in input %))
               (x-mas? (get-corners %)))
         (locations width))) ;; => 1925
-
