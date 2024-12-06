@@ -22,16 +22,17 @@
     (let [next-p (mapv + p dir)]
       (if (obstacles next-p)
         (let [new-dir (turn-right dir)]
-          [(mapv + p new-dir) new-dir])
+          [p new-dir])
         [next-p dir]))))
 
 ;; part 1
-(time
- (->> (iterate (mover crates) [startp up])
-      (map first)
-      (take-while locations)
-      distinct
-      count)) ; => 4663
+(def spaces-visited
+  (->> (iterate (mover crates) [startp up])
+       (map first)
+       (take-while locations)
+       set))
+
+(count spaces-visited) ; => 4663 
 
 ;; part 2
 
@@ -46,14 +47,11 @@
           :else
           (recur next-p-dir (conj seen next-p-dir)))))))
 
-#_(def res (let [path (->> (iterate (mover crates) [startp up])
-                           (map first)
-                           (take-while locations)
-                           set)]
-             (->> (disj path startp)
-                  ; (map-indexed #(do (prn %1) %2)) ; print progress
-                  (filter detect-loop?))))
+#_(time
+   (->> (disj spaces-visited startp)
+        (pmap detect-loop?)
+        (filter identity)
+        count)) ;; => 1530
 
-#_(count res) ;; => 1430   <-- Says this number is too low 
 
 
