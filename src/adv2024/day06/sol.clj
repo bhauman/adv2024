@@ -4,7 +4,7 @@
    [clojure.set :as set]
    [clojure.edn :as edn]))
 
-(def input (->> (string/replace (slurp "src/adv2024/day06/input.txt") "|" " ")
+(def input (->> (slurp "src/adv2024/day06/input.txt")
                 (string/split-lines)
                 (mapv (comp vec seq))))
 
@@ -52,6 +52,3 @@
         (pmap detect-loop?)
         (filter identity)
         count)) ;; => 1530
-
-
-
