@@ -26,10 +26,8 @@
           [p new-dir])
         [next-p dir]))))
 
-
-(def visited-path
-  (->> (iterate (mover crates) [startp up])
-       (take-while (comp locations first))))
+(def visited-path (->> (iterate (mover crates) [startp up])
+                       (take-while (comp locations first))))
 
 ;; part 1
 #_(->> spaces-visited (map first) distinct count) ; => 4663
