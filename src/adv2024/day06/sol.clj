@@ -16,11 +16,12 @@
                       (cond-> acc
                         (= \# (get-in input l)) (conj l))) #{} locations))
 (def up [-1 0])
+
 (defn turn-right [[y x]] [x (- y)])
 
 (defn mover [obstacles]
-  (fn [[p dir]]
-    (let [next-p (mapv + p dir)]
+  (fn [[[y x :as p] [dy dx :as dir]]]
+    (let [next-p [(+ y dy) (+ x dx)]]
       (if (obstacles next-p)
         (let [new-dir (turn-right dir)]
           [p new-dir])
@@ -30,7 +31,7 @@
                        (take-while (comp locations first))))
 
 ;; part 1
-#_(->> spaces-visited (map first) distinct count) ; => 4663
+#_(->> visited-path (map first) distinct count) ; => 4663
 
 (defn detect-loop?
   ([crate] (detect-loop? [startp up] #{} crate))
