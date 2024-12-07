@@ -2,7 +2,8 @@
   (:require
    [clojure.string :as string]
    [clojure.set :as set]
-   [clojure.edn :as edn]))
+   [clojure.edn :as edn]
+   [medley.core :as med]))
 
 (def input (->> (slurp "src/adv2024/day06/input.txt")
                 (string/split-lines)
@@ -25,30 +26,56 @@
           [p new-dir])
         [next-p dir]))))
 
-;; part 1
-(def spaces-visited
-  (->> (iterate (mover crates) [startp up])
-       (map first)
-       (take-while locations)
-       set))
 
-(count spaces-visited) ; => 4663 
+(def visited-path
+  (->> (iterate (mover crates) [startp up])
+       (take-while (comp locations first))))
+
+;; part 1
+#_(->> spaces-visited (map first) distinct count) ; => 4663
+
+(defn detect-loop?
+  ([crate] (detect-loop? [startp up] #{} crate))
+  ([start-p-dir seen' crate]
+   (let [move (mover (conj crates crate))]
+     (loop [p-dir start-p-dir
+            seen seen']
+       (let [next-p-dir (move p-dir)]
+         (cond
+           (not (locations (first next-p-dir))) false
+           (seen next-p-dir) crate
+           :else
+           (recur next-p-dir (conj seen next-p-dir))))))))
 
 ;; part 2
-
-(defn detect-loop? [crate]
-  (let [move (mover (conj crates crate))]
-    (loop [p-dir [startp up]
-           seen #{}]
-      (let [next-p-dir (move p-dir)]
-        (cond
-          (not (locations (first next-p-dir))) false
-          (seen next-p-dir) true
-          :else
-          (recur next-p-dir (conj seen next-p-dir)))))))
-
 #_(time
-   (->> (disj spaces-visited startp)
+   (->> (disj (set (map first visited-path)) startp)
         (pmap detect-loop?)
         (filter identity)
-        count)) ;; => 1530
+        count
+        )) ;; => 1530
+
+
+;; faster version that follows the path, and instead of starting at the beginning each
+;; it gets start-pos-dir from just before the obstacle and uses the path so far to construct
+;; the seen, thus each iteration has less work to do
+
+;; the important thing here is that you can not try and obstacle the
+;; second time that you reach it on a path bc that state [obstacle [start dir]]] is probably
+;; not reachable for the reason that you have already passed through the space where that
+;; you are about to place the obstacle
+
+#_(time
+   (->> (reverse visited-path)
+        (iterate rest)
+        (take-while not-empty)
+        reverse               ;; at this point we have a seq of growing paths
+        ;; need to keep the first path with a unique location to use as an obstacle 
+        (med/distinct-by ffirst)
+        (remove #(= startp (ffirst %))) ;; don't use the start position as obstacle
+        (pmap #(detect-loop? (second %) (into #{} (rest %)) (ffirst %)))
+        (filter identity)
+        distinct
+        count
+        )) ; => 1530
+
