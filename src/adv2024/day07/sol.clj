@@ -4,6 +4,7 @@
    [clojure.set :as set]
    [clojure.edn :as edn]
    [clojure.math.combinatorics :as combo]
+   [clojure.core.reducers :as r]
    [medley.core :as med]))
 
 (def input (-> (slurp "src/adv2024/day07/input.txt")
@@ -29,10 +30,9 @@
   (parse-long (str a b)))
 
 ;; part 2
-#_(def part2
-    (->> (filter (partial solvable? [+ * op-||]) input)
-         (map first)
-         (reduce +))) ; => 165278151522644
+#_(->> (r/filter (partial solvable? [+ * op-|| ]) input)
+       (r/map first)
+       (r/fold 10 + +)) ; => 165278151522644
 
 
 
