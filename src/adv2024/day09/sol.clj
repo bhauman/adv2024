@@ -71,7 +71,7 @@
    (fn [disk n]
      (let [[insert-data ds] (retrieve-node disk n)]
        (or (find-and-insert ds insert-data) disk)))
-   ds (reverse (range (count ds)))))
+   ds (range (dec (count ds)) 1 -1 )))
 
 ;; part 2
 #_(def part2
