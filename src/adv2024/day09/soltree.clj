@@ -54,6 +54,8 @@
         (nil? loc) false
         (z/end? loc) false
         ;; don't ever pass where last node was retrieved
+        ;; this isn't needed but speeds things up a little
+        ;; also can place this as third element
         (-> loc z/node meta ::end) false 
         (z/branch? loc)
         (if (enter-branch? loc arg)
@@ -102,4 +104,3 @@
           (mapcat (fn [[sz id]] (repeat sz id)))
           (map-indexed (fn [i v] (* i (or v 0))))
           (reduce +)))) ; => 6239783302560
-
