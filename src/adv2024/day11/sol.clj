@@ -30,3 +30,19 @@
 (time
  (reduce + (map (partial blink-count 75) input)))  ; => 259112729857522
 
+
+;; frequencies method
+(defn hist-step [freq]
+  (->> freq
+       (mapcat (fn [[k prev-count]] (map (fn [c] {c prev-count}) (flatten [(blink k)]))))
+       (apply merge-with +)))
+
+#_(hist-step (frequencies [0 0 3]))
+
+#_(->> (iterate hist-step (frequencies input))
+       (drop 75)
+       first
+       vals
+       (reduce +))
+
+
