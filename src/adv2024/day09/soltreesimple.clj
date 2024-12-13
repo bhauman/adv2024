@@ -47,6 +47,7 @@
         #(cons (edit-first-node-id %1 n edit-fn) %2))
        (insert-first (children tree) #(= (second %) n) #(cons (edit-fn %1) %2))))))
 
+
 (defn insert-id [tree [sz id :as nd]]
   (if (empty? tree)
     false
