@@ -1,12 +1,6 @@
 (ns adv2024.day15.sol
   (:require
-   [clojure.string :as string]
-   [clojure.set :as set]
-   [clojure.edn :as edn]
-   [clojure.math.combinatorics :as combo]
-   [clojure.core.reducers :as r]
-   [medley.core :as med]
-   [adv2024.grid :as grid]))
+   [clojure.string :as string]))
 
 (def input (->> (slurp "src/adv2024/day15/input.txt")
                string/split-lines
