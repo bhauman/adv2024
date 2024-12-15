@@ -11,8 +11,10 @@
                     (apply concat)))
 
 (defn turn-right [[y x]] [x (- y)])
-(def cardinals (take 4 (iterate turn-right [-1 0])))
-(def directions (into {} (map vector [\^ \> \v \<] cardinals)))
+(defn turn-left  [[y x]] [(- x) y])
+(def directions (->> (take 4 (iterate turn-right [-1 0]))
+                     (map vector [\^ \> \v \<])
+                     (into {})))
 
 (defn locations [lines]
   (for [y (range (count lines)) x (range (count (first lines)))] [y x]))
@@ -39,14 +41,10 @@
             (assoc to (wm from)))))))
 
 (defn move [[rb wm :as state] dirch]
-  (let [dir (directions dirch)
-        next-rb (mapv + rb dir)]
+  (let [dir (directions dirch)]
     (or
-     (if (nil? (wm next-rb))
-       [next-rb wm]
-       (when-not (= \# (wm next-rb))
-         (when-let [res (try-move-over next-rb dir wm)]
-           [next-rb res])))
+     (when-let [res (try-move-over rb dir wm)]
+       [(mapv + rb dir) res])
      state)))
 
 ;; part 1
@@ -57,37 +55,31 @@
        (map (fn [[a b]] (+ (* 100 a) b)))
        (reduce +)) ; => 1527563
 
+(defn other-box-half-dir [to-ch [y _ :as dir]]
+  (condp = [to-ch y]
+    [\[ -1] (turn-right dir)
+    [\]  1] (turn-right dir)
+    [\[  1] (turn-left dir)
+    [\] -1] (turn-left dir)))
+
 (defn try-move-up-down [from dir wm]
   (let [to (mapv + from dir)
         to-ch   (wm to)]
     (when-not (= to-ch \#)
       (if (nil? to-ch)
         (-> wm (dissoc from) (assoc to (wm from)))
-        (let [other-to (map + to
-                            (cond
-                              (or (and (= \[ to-ch) (= -1 (first dir)))
-                                  (and (= \] to-ch) (= 1 (first dir))))
-                              (turn-right dir)
-                              (or (and (= \[ to-ch) (= 1 (first dir)))
-                                  (and (= \] to-ch) (= -1 (first dir))))
-                              (-> dir turn-right turn-right turn-right)))]
+        (let [other-to (map + to (other-box-half-dir to-ch dir))]
           (when-let [res (try-move-up-down to dir wm)]
             (when-let [res (try-move-up-down other-to dir res)]
               (cond-> (dissoc res from)
-                  (wm from) (assoc to (wm from))))))))))
+                (wm from) (assoc to (wm from))))))))))
 
 (defn move2 [[rb wm :as state] dirch]
-  (let [dir (directions dirch)
-        next-rb (mapv + rb dir)]
+  (let [dir (directions dirch)]
     (or
-     (if (nil? (wm next-rb))
-       [next-rb wm]
-       (when-not (= \# (wm next-rb))
-         (if (#{\^ \v} dirch)
-           (when-let [res (try-move-up-down rb dir wm)]
-             [next-rb res])
-           (when-let [res (try-move-over next-rb dir wm)]
-             [next-rb res]))))
+     (when-let [res ((if (#{\^ \v} dirch) try-move-up-down try-move-over)
+                     rb dir wm)]
+       [(mapv + rb dir) res])
      state)))
 
 #_(let [map-lines2 (mapv
@@ -105,3 +97,4 @@
          (map (fn [[a b]] (+ (* 100 a) b)))
          (reduce +))
   )  ; => 1521635
+
