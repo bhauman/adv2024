@@ -1,11 +1,7 @@
 (ns adv2024.day16.sol
   (:require
    [clojure.string :as string]
-   [clojure.set :as set]
-   [clojure.edn :as edn]
-   [clojure.math.combinatorics :as combo]
-   [clojure.core.reducers :as r]
-   [medley.core :as med]))
+   [clojure.math.combinatorics :as combo]))
 
 (def input (->> (slurp "src/adv2024/day16/input.txt")
                 string/split-lines
@@ -66,11 +62,10 @@
           (take-while not-empty)
           (mapcat #(select-keys % [[end [0 1]] [end [-1 0]]]))
           (map val)
-          ffirst)))
+          ffirst))) ; => 105508
 
 
 ;; part 2
-
 #_(def num-best-seats
     (time
      (->> (iterate (partial extend-paths maze)
@@ -80,7 +75,7 @@
           (map val)
           first
           last
-          )))
+          count))) ; => 548
 
 
 
