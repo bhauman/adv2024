@@ -61,7 +61,9 @@
                    {[start [0 1]] [0 [start [0 1]] #{start}]})
           (take-while not-empty)
           (mapcat #(select-keys % [[end [0 1]] [end [-1 0]]]))
+          (take 6)
           (map val)
+          (sort-by first)
           ffirst))) ; => 105508
 
 
@@ -72,7 +74,9 @@
                    {[start [0 1]] [0 [start [0 1]] #{start}]})
           (take-while not-empty)
           (mapcat #(select-keys % [[end [0 1]] [end [-1 0]]]))
+          (take 6)
           (map val)
+          (sort-by first)
           first
           last
           count))) ; => 548
