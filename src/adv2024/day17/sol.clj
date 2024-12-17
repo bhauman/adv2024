@@ -1,11 +1,7 @@
 (ns adv2024.day17.sol
   (:require
    [clojure.string :as string]
-   [clojure.set :as set]
-   [clojure.edn :as edn]
-   [clojure.math.combinatorics :as combo]
-   [clojure.core.reducers :as r]
-   [medley.core :as med]))
+   [clojure.core.reducers :as r]))
 
 (def input (->> (slurp "src/adv2024/day17/input.txt")
                 string/split-lines
@@ -85,7 +81,7 @@
           -1 (recur (inc mid) r result)
           (recur l (dec mid) result))))))
 
-(defn number-of-matching-digits [n n2]
+(defn matching-digits-val [n n2]
   (reduce + (map #(if (= %1 %2)
                     (long (Math/pow 10 %3))
                     0) n n2 (range))))
@@ -100,22 +96,23 @@
       (let [step-size (long (/ (- end start) 10000))]
         (->> (range start end step-size)
              (pmap (juxt identity try-at))
-             (map (fn [[a b]] [a (number-of-matching-digits progn b)]))
+             (map (fn [[a b]] [a (matching-digits-val progn b)]))
              (reduce (partial max-key last))
              first
              (#(vector (- % step-size) (+ % step-size))))))))
 
 ;; part 2
 #_(time
-   (let [start (binary-search 0 100000000000000
+   (let [progn (:prog start-state)
+         start (binary-search 0 100000000000000
                               #(count (try-at %))
-                              #(compare % 16))
+                              #(compare % (count progn)))
          end (binary-search 0 1000000000000000
                             #(count (try-at %))
-                            #(compare % 17))]
-     (->> (iterate (partial find-quine-step (:prog start-state))
+                            #(compare % (inc (count progn))))]
+     (->> (iterate (partial find-quine-step progn)
                    [start end])
-          #_(map #(do (prn :step %) %))
+          (map #(do (prn :step %) %))
           (drop-while #(not (number? %)))
           first))) ; => 202975183645226
 
