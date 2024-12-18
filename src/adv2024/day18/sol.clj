@@ -45,18 +45,21 @@
 ;; part 1
 #_(time (get-path-length (maze (take start-size input))))
 
-; part 2
-#_(def res
-    (time
-     (->> (drop start-size input)
-          (reductions
-           (fn [[_ m] n] [n (disj m n)])
-           [nil (maze (take start-size input))])
-          (filter (comp nil?
-                        #(time (get-path-length %))
-                        second))
-          ffirst
-          reverse)))
+(defn binary-search [l r target-comp]
+  (loop [l l r r]
+    (if (= l r)
+      l
+      (let [mid (long (Math/ceil (/ (+ l r) 2)))]
+        (if (target-comp mid)
+          (recur mid r)
+          (recur l (dec mid)))))))
+
+;; part 2
+#_(->> (binary-search 0
+                      (count input)
+                      #(get-path-length (maze (take % input))))
+       (nth input)
+       reverse)
 
 
 
