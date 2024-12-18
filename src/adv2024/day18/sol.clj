@@ -56,7 +56,7 @@
 
 ;; part 2
 #_(->> (binary-search 0
-                      (count input)
+                      (dec (count input))
                       #(get-path-length (maze (take % input))))
        (nth input)
        reverse)
