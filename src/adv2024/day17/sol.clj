@@ -115,11 +115,3 @@
           (map #(do (prn :step %) %))
           (drop-while #(not (number? %)))
           first))) ; => 202975183645226
-
-
-
-
-
-
-
-
