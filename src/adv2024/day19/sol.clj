@@ -18,10 +18,9 @@
 (defn matcher [pat cur-p [x & xs :as s]]
   (cond
     (nil? cur-p) false
-    (nil? x) (boolean (:e cur-p))
+    (nil? x) (:e cur-p)
     :else (or
-           (when (:e cur-p)
-             (matcher pat pat s))
+           (when (:e cur-p) (matcher pat pat s))
            (matcher pat (cur-p x) xs))))
 
 (def re (comp-re patterns))
