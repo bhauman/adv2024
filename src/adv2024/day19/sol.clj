@@ -6,14 +6,13 @@
 (def input (-> (slurp "src/adv2024/day19/input.txt")
                string/split-lines))
 
-(def patterns (->> (str "(" (first input) ")")
-                   edn/read-string
+(def patterns (->> (edn/read-string (str "(" (first input) ")"))
                    (map str)))
 
 (def designs (->> input (drop 2)))
 
 (defn comp-re [pats]
-  (->> pats (reduce #(update-in %1 (vec %2) assoc :e true) {})))
+  (->> pats (reduce #(update-in %1 %2 assoc :e true) {})))
 
 (defn matcher [pat cur-p [x & xs :as s]]
   (cond
@@ -41,7 +40,7 @@
         (match-count pat (cur-p x) xs)
         (if (:e cur-p)
           (match-count pat pat s)
-          0)))))) 
+          0))))))
 
 #_(time
    (->> designs
