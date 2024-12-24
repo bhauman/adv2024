@@ -1,12 +1,9 @@
 (ns adv2024.day22.sol
   (:require
    [clojure.string :as string]
-   [clojure.set :as set]
    [clojure.edn :as edn]
-   [clojure.math.combinatorics :as combo]
-   [clojure.math :as math]
-   [clojure.core.reducers :as r]
-   [medley.core :as med]))
+   [medley.core :as med]
+   [clojure.core.reducers :as r]))
 
 (def input (as-> (slurp "src/adv2024/day22/input.txt") x
              (edn/read-string (str "[" x "]"))))
@@ -34,23 +31,24 @@
        (map #(mod % 10))
        (partition 2 1)
        (map (fn [[cost-a cost-b]]
-              [cost-b (- cost-b cost-a)]))
+              [cost-b (unchecked-subtract cost-b cost-a)]))
        (partition 4 1)
        (map (fn [cost-diffs]
               [(map second cost-diffs) (first (last cost-diffs))]))
        (med/distinct-by first)
        (into {})))
 
+
 ;; these take time
 (comment
 
-  (def price-maps (mapv #(sequence-price-map 2000 %) input))
+  (def price-maps (pmap #(sequence-price-map 2000 %) input))
 
   (def sorted-keys
-    (->> (mapcat keys price-maps)
-         frequencies
-         (sort-by second >)
-         (map first)))
+    (->> (r/map (comp frequencies keys) price-maps)
+          (r/fold (partial merge-with unchecked-add))
+          (sort-by second >)
+          (mapv first)))
 
   ;; part 2
   (->> sorted-keys
